@@ -1,0 +1,46 @@
+{
+  "variant": "noprun",
+  "sample": 1.0,
+  "master": "local[*]",
+  "flags": {
+    "prune": false,
+    "broadcast": true,
+    "cache": true,
+    "vectorized": true,
+    "bstats": true
+  },
+  "ops": {
+    "m1": {
+      "wall_time_s": 22.14,
+      "num_jobs": 8,
+      "num_stages": 11,
+      "num_tasks": 123,
+      "executor_run_time_ms": 236315,
+      "executor_cpu_time_ms": 178546,
+      "input_bytes": 3337714070,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 6835,
+      "shuffle_write_bytes": 6835,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "total_records": 41169720,
+      "removed_per_criterion": {
+        "fare_le_0": 748284,
+        "distance_le_0": 776305,
+        "passengers_invalid": 4492870,
+        "dropoff_before_pickup": 13510,
+        "location_invalid": 425660
+      },
+      "kept_per_year": {
+        "2023": 10,
+        "2024": 35274752,
+        "2002": 10,
+        "2009": 15,
+        "2008": 9,
+        "2026": 1,
+        "2025": 5
+      }
+    }
+  },
+  "total_wall_s": 26.03
+}

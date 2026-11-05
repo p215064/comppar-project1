@@ -1,0 +1,112 @@
+### plano fisico de m2 na variante baseline ###
+== Physical Plan ==
+AdaptiveSparkPlan (19)
++- HashAggregate (18)
+   +- Exchange (17)
+      +- HashAggregate (16)
+         +- Project (15)
+            +- SortMergeJoin Inner (14)
+               :- Sort (9)
+               :  +- Exchange (8)
+               :     +- Filter (7)
+               :        +- InMemoryTableScan (1)
+               :              +- InMemoryRelation (2)
+               :                    +- * Project (6)
+               :                       +- * Filter (5)
+               :                          +- * ColumnarToRow (4)
+               :                             +- Scan parquet  (3)
+               +- Sort (13)
+                  +- Exchange (12)
+                     +- Filter (11)
+                        +- Scan csv  (10)
+
+
+(1) InMemoryTableScan
+Output [5]: [tpep_pickup_datetime#1, tpep_dropoff_datetime#2, trip_distance#21, fare_amount#22, PU#23]
+Arguments: [tpep_pickup_datetime#1, tpep_dropoff_datetime#2, trip_distance#21, fare_amount#22, PU#23], [isnotnull(PU#23)]
+
+(2) InMemoryRelation
+Arguments: [VendorID#0, tpep_pickup_datetime#1, tpep_dropoff_datetime#2, passenger_count#20, trip_distance#21, RatecodeID#5L, store_and_fwd_flag#6, PULocationID#7, DOLocationID#8, payment_type#9L, fare_amount#22, extra#11, mta_tax#12, tip_amount#13, tolls_amount#14, improvement_surcharge#15, total_amount#16, congestion_surcharge#17, Airport_fee#18, PU#23, DO#24], StorageLevel(disk, memory, deserialized, 1 replicas)
+
+(3) Scan parquet 
+Output [19]: [VendorID#0, tpep_pickup_datetime#1, tpep_dropoff_datetime#2, passenger_count#3L, trip_distance#4, RatecodeID#5L, store_and_fwd_flag#6, PULocationID#7, DOLocationID#8, payment_type#9L, fare_amount#10, extra#11, mta_tax#12, tip_amount#13, tolls_amount#14, improvement_surcharge#15, total_amount#16, congestion_surcharge#17, Airport_fee#18]
+Batched: true
+Location: InMemoryFileIndex [file:/C:/Users/rodri/Desktop/comppar/CompPar/project1/data]
+PushedFilters: [IsNotNull(passenger_count), IsNotNull(fare_amount), GreaterThan(fare_amount,0.0), IsNotNull(trip_distance), GreaterThan(trip_distance,0.0), IsNotNull(tpep_pickup_datetime), IsNotNull(tpep_dropoff_datetime), IsNotNull(PULocationID), IsNotNull(DOLocationID), GreaterThanOrEqual(PULocationID,1), LessThanOrEqual(PULocationID,263), GreaterThanOrEqual(DOLocationID,1), LessThanOrEqual(DOLocationID,263)]
+ReadSchema: struct<VendorID:int,tpep_pickup_datetime:timestamp_ntz,tpep_dropoff_datetime:timestamp_ntz,passenger_count:bigint,trip_distance:double,RatecodeID:bigint,store_and_fwd_flag:string,PULocationID:int,DOLocationID:int,payment_type:bigint,fare_amount:double,extra:double,mta_tax:double,tip_amount:double,tolls_amount:double,improvement_surcharge:double,total_amount:double,congestion_surcharge:double,Airport_fee:double>
+
+(4) ColumnarToRow [codegen id : 1]
+Input [19]: [VendorID#0, tpep_pickup_datetime#1, tpep_dropoff_datetime#2, passenger_count#3L, trip_distance#4, RatecodeID#5L, store_and_fwd_flag#6, PULocationID#7, DOLocationID#8, payment_type#9L, fare_amount#10, extra#11, mta_tax#12, tip_amount#13, tolls_amount#14, improvement_surcharge#15, total_amount#16, congestion_surcharge#17, Airport_fee#18]
+
+(5) Filter [codegen id : 1]
+Input [19]: [VendorID#0, tpep_pickup_datetime#1, tpep_dropoff_datetime#2, passenger_count#3L, trip_distance#4, RatecodeID#5L, store_and_fwd_flag#6, PULocationID#7, DOLocationID#8, payment_type#9L, fare_amount#10, extra#11, mta_tax#12, tip_amount#13, tolls_amount#14, improvement_surcharge#15, total_amount#16, congestion_surcharge#17, Airport_fee#18]
+Condition : ((((((((((((((((isnotnull(passenger_count#3L) AND isnotnull(fare_amount#10)) AND (fare_amount#10 > 0.0)) AND isnotnull(trip_distance#4)) AND (trip_distance#4 > 0.0)) AND isnotnull(cast(passenger_count#3L as int))) AND (cast(passenger_count#3L as int) > 0)) AND (cast(passenger_count#3L as int) <= 6)) AND isnotnull(tpep_pickup_datetime#1)) AND isnotnull(tpep_dropoff_datetime#2)) AND (tpep_dropoff_datetime#2 > tpep_pickup_datetime#1)) AND isnotnull(PULocationID#7)) AND isnotnull(DOLocationID#8)) AND (PULocationID#7 >= 1)) AND (PULocationID#7 <= 263)) AND (DOLocationID#8 >= 1)) AND (DOLocationID#8 <= 263))
+
+(6) Project [codegen id : 1]
+Output [21]: [VendorID#0, tpep_pickup_datetime#1, tpep_dropoff_datetime#2, cast(passenger_count#3L as int) AS passenger_count#20, trip_distance#4, RatecodeID#5L, store_and_fwd_flag#6, PULocationID#7, DOLocationID#8, payment_type#9L, fare_amount#10, extra#11, mta_tax#12, tip_amount#13, tolls_amount#14, improvement_surcharge#15, total_amount#16, congestion_surcharge#17, Airport_fee#18, PULocationID#7 AS PU#23, DOLocationID#8 AS DO#24]
+Input [19]: [VendorID#0, tpep_pickup_datetime#1, tpep_dropoff_datetime#2, passenger_count#3L, trip_distance#4, RatecodeID#5L, store_and_fwd_flag#6, PULocationID#7, DOLocationID#8, payment_type#9L, fare_amount#10, extra#11, mta_tax#12, tip_amount#13, tolls_amount#14, improvement_surcharge#15, total_amount#16, congestion_surcharge#17, Airport_fee#18]
+
+(7) Filter
+Input [5]: [tpep_pickup_datetime#1, tpep_dropoff_datetime#2, trip_distance#21, fare_amount#22, PU#23]
+Condition : isnotnull(PU#23)
+
+(8) Exchange
+Input [5]: [tpep_pickup_datetime#1, tpep_dropoff_datetime#2, trip_distance#21, fare_amount#22, PU#23]
+Arguments: hashpartitioning(PU#23, 200), ENSURE_REQUIREMENTS, [plan_id=223]
+
+(9) Sort
+Input [5]: [tpep_pickup_datetime#1, tpep_dropoff_datetime#2, trip_distance#21, fare_amount#22, PU#23]
+Arguments: [PU#23 ASC NULLS FIRST], false, 0
+
+(10) Scan csv 
+Output [2]: [LocationID#781, Borough#782]
+Batched: false
+Location: InMemoryFileIndex [file:/C:/Users/rodri/Desktop/comppar/CompPar/project1/data/zones/taxi_zone_lookup.csv]
+PushedFilters: [IsNotNull(LocationID)]
+ReadSchema: struct<LocationID:int,Borough:string>
+
+(11) Filter
+Input [2]: [LocationID#781, Borough#782]
+Condition : isnotnull(LocationID#781)
+
+(12) Exchange
+Input [2]: [LocationID#781, Borough#782]
+Arguments: hashpartitioning(LocationID#781, 200), ENSURE_REQUIREMENTS, [plan_id=224]
+
+(13) Sort
+Input [2]: [LocationID#781, Borough#782]
+Arguments: [LocationID#781 ASC NULLS FIRST], false, 0
+
+(14) SortMergeJoin
+Left keys [1]: [PU#23]
+Right keys [1]: [LocationID#781]
+Join type: Inner
+Join condition: None
+
+(15) Project
+Output [6]: [trip_distance#21, fare_amount#22, Borough#782 AS pickup_borough#786, dayofweek(cast(tpep_pickup_datetime#1 as date)) AS dow#787, hour(tpep_pickup_datetime#1, Some(Europe/Lisbon)) AS hour#788, (cast((unix_timestamp(tpep_dropoff_datetime#2, yyyy-MM-dd HH:mm:ss, Some(Europe/Lisbon), true) - unix_timestamp(tpep_pickup_datetime#1, yyyy-MM-dd HH:mm:ss, Some(Europe/Lisbon), true)) as double) / 60.0) AS duration_min#789]
+Input [7]: [tpep_pickup_datetime#1, tpep_dropoff_datetime#2, trip_distance#21, fare_amount#22, PU#23, LocationID#781, Borough#782]
+
+(16) HashAggregate
+Input [6]: [trip_distance#21, fare_amount#22, pickup_borough#786, dow#787, hour#788, duration_min#789]
+Keys [3]: [pickup_borough#786, dow#787, hour#788]
+Functions [4]: [partial_count(1), partial_avg(fare_amount#22), partial_avg(duration_min#789), partial_avg(trip_distance#21)]
+Aggregate Attributes [7]: [count#1141L, sum#1142, count#1143L, sum#1144, count#1145L, sum#1146, count#1147L]
+Results [10]: [pickup_borough#786, dow#787, hour#788, count#1148L, sum#1149, count#1150L, sum#1151, count#1152L, sum#1153, count#1154L]
+
+(17) Exchange
+Input [10]: [pickup_borough#786, dow#787, hour#788, count#1148L, sum#1149, count#1150L, sum#1151, count#1152L, sum#1153, count#1154L]
+Arguments: hashpartitioning(pickup_borough#786, dow#787, hour#788, 200), ENSURE_REQUIREMENTS, [plan_id=231]
+
+(18) HashAggregate
+Input [10]: [pickup_borough#786, dow#787, hour#788, count#1148L, sum#1149, count#1150L, sum#1151, count#1152L, sum#1153, count#1154L]
+Keys [3]: [pickup_borough#786, dow#787, hour#788]
+Functions [4]: [count(1), avg(fare_amount#22), avg(duration_min#789), avg(trip_distance#21)]
+Aggregate Attributes [4]: [count(1)#822L, avg(fare_amount#22)#823, avg(duration_min#789)#824, avg(trip_distance#21)#825]
+Results [7]: [pickup_borough#786, dow#787, hour#788, count(1)#822L AS trip_count#790L, round(avg(fare_amount#22)#823, 2) AS mean_fare#791, round(avg(duration_min#789)#824, 2) AS mean_duration_min#792, round(avg(trip_distance#21)#825, 2) AS mean_distance#793]
+
+(19) AdaptiveSparkPlan
+Output [7]: [pickup_borough#786, dow#787, hour#788, trip_count#790L, mean_fare#791, mean_duration_min#792, mean_distance#793]
+Arguments: isFinalPlan=false
+
+

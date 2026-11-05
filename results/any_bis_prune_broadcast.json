@@ -1,0 +1,31 @@
+{
+  "variant": "any",
+  "sample": 1.0,
+  "master": "local[*]",
+  "flags": {
+    "prune": true,
+    "broadcast": true,
+    "cache": false,
+    "vectorized": false,
+    "bstats": false
+  },
+  "ops": {
+    "o2": {
+      "wall_time_s": 20.14,
+      "num_jobs": 18,
+      "num_stages": 49,
+      "num_tasks": 307,
+      "executor_run_time_ms": 210899,
+      "executor_cpu_time_ms": 148906,
+      "input_bytes": 35240366,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 15980091,
+      "shuffle_write_bytes": 15144586,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "top20_rows_per_borough_month": 1360,
+      "direction_reversals": 1532
+    }
+  },
+  "total_wall_s": 30.78
+}

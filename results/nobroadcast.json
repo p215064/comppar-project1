@@ -1,0 +1,61 @@
+{
+  "variant": "nobroadcast",
+  "sample": 1.0,
+  "master": "local[*]",
+  "flags": {
+    "prune": true,
+    "broadcast": false,
+    "cache": true,
+    "vectorized": true,
+    "bstats": true
+  },
+  "ops": {
+    "m1": {
+      "wall_time_s": 15.77,
+      "num_jobs": 8,
+      "num_stages": 11,
+      "num_tasks": 123,
+      "executor_run_time_ms": 167628,
+      "executor_cpu_time_ms": 117328,
+      "input_bytes": 2033407824,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 6835,
+      "shuffle_write_bytes": 6835,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "total_records": 41169720,
+      "removed_per_criterion": {
+        "fare_le_0": 748284,
+        "distance_le_0": 776305,
+        "passengers_invalid": 4492870,
+        "dropoff_before_pickup": 13510,
+        "location_invalid": 425660
+      },
+      "kept_per_year": {
+        "2023": 10,
+        "2024": 35274752,
+        "2002": 10,
+        "2009": 15,
+        "2008": 9,
+        "2026": 1,
+        "2025": 5
+      }
+    },
+    "m2": {
+      "wall_time_s": 8.95,
+      "num_jobs": 4,
+      "num_stages": 9,
+      "num_tasks": 97,
+      "executor_run_time_ms": 112803,
+      "executor_cpu_time_ms": 70984,
+      "input_bytes": 2009738787,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 797533498,
+      "shuffle_write_bytes": 797533498,
+      "memory_spilled_bytes": 1199634256,
+      "disk_spilled_bytes": 470330194,
+      "rows": 959
+    }
+  },
+  "total_wall_s": 28.54
+}

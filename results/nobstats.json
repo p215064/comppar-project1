@@ -1,0 +1,30 @@
+{
+  "variant": "nobstats",
+  "sample": 1.0,
+  "master": "local[*]",
+  "flags": {
+    "prune": true,
+    "broadcast": true,
+    "cache": true,
+    "vectorized": true,
+    "bstats": false
+  },
+  "ops": {
+    "o1": {
+      "wall_time_s": 7.89,
+      "num_jobs": 6,
+      "num_stages": 10,
+      "num_tasks": 124,
+      "executor_run_time_ms": 98421,
+      "executor_cpu_time_ms": 64296,
+      "input_bytes": 4019465243,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 592271134,
+      "shuffle_write_bytes": 592271134,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "rate_rows": 48
+    }
+  },
+  "total_wall_s": 27.71
+}

@@ -1,0 +1,46 @@
+{
+  "variant": "final",
+  "sample": 1.0,
+  "master": "local[4]",
+  "flags": {
+    "prune": true,
+    "broadcast": true,
+    "cache": true,
+    "vectorized": true,
+    "bstats": true
+  },
+  "ops": {
+    "m2": {
+      "wall_time_s": 3.89,
+      "num_jobs": 3,
+      "num_stages": 4,
+      "num_tasks": 14,
+      "executor_run_time_ms": 10944,
+      "executor_cpu_time_ms": 10234,
+      "input_bytes": 1878375371,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 352838,
+      "shuffle_write_bytes": 352838,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "rows": 959
+    },
+    "o2": {
+      "wall_time_s": 32.44,
+      "num_jobs": 24,
+      "num_stages": 62,
+      "num_tasks": 189,
+      "executor_run_time_ms": 113611,
+      "executor_cpu_time_ms": 109140,
+      "input_bytes": 9391839862,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 20547199,
+      "shuffle_write_bytes": 20547199,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "top20_rows_per_borough_month": 1360,
+      "direction_reversals": 1532
+    }
+  },
+  "total_wall_s": 59.28
+}

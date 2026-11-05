@@ -1,0 +1,35 @@
+{
+  "nota": "Numeros do estudo de otimizacao. Tempos de parede em segundos. corridas sem escrita de output exceto onde indicado. O1 da baseline correu a 10% da amostra (UDF demasiado lento no ano completo).",
+  "baseline": {
+    "m1": {"wall_s": 7.04, "shuffle_read_mb": 0.0, "tasks": 71, "exec_run_s": 68.4, "cpu_s": 33.2},
+    "m2": {"wall_s": 9.71, "shuffle_read_mb": 797.5, "tasks": 97, "exec_run_s": 112.6, "cpu_s": 75.6},
+    "m3": {"wall_s": 10.99, "shuffle_read_mb": 0.5, "tasks": 154, "exec_run_s": 114.1, "cpu_s": 74.5},
+    "o1_10pct": {"wall_s": 41.69, "shuffle_read_mb": 71.0, "tasks": 203, "exec_run_s": 571.9, "cpu_s": 36.4},
+    "o2": {"wall_s": 21.95, "shuffle_read_mb": 19.8, "tasks": 403, "exec_run_s": 207.6, "cpu_s": 138.7}
+  },
+  "final": {
+    "m1": {"wall_s": 16.40, "tasks": 123, "exec_run_s": 165.5, "cpu_s": 113.6, "nota": "inclui materializacao do cache"},
+    "m2": {"wall_s": 4.31, "shuffle_read_mb": 0.73, "tasks": 36, "exec_run_s": 28.4, "cpu_s": 19.9},
+    "m2_sessao": {"wall_s": 2.90, "shuffle_read_mb": 0.73},
+    "m3": {"wall_s": 6.79, "shuffle_read_mb": 0.46, "tasks": 130, "exec_run_s": 66.5, "cpu_s": 50.2},
+    "o1": {"wall_s": 8.66, "shuffle_read_mb": 6.6, "tasks": 146, "exec_run_s": 87.0, "cpu_s": 65.0},
+    "o2": {"wall_s": 22.25, "shuffle_read_mb": 22.5, "tasks": 434, "exec_run_s": 262.9, "cpu_s": 182.2}
+  },
+  "ab_prune": {"m1_noprun_s": 22.14, "m1_final_s": 16.40, "probe_allcols_wall_s": 2.3, "probe_allcols_cpu_s": 9.0, "probe_pruned_wall_s": 0.4, "probe_pruned_cpu_s": 3.0},
+  "ab_broadcast": {"m2_nobroadcast_s": 8.95, "m2_final_sessao_s": 2.90, "shuffle_nobroadcast_mb": 797.5, "shuffle_final_mb": 0.73},
+  "ab_cache": {"m2_nocache_s": 3.84, "m2_final_sessao_s": 2.90},
+  "ab_udf_10pct": {"o1_novector_s": 37.67, "o1_final_s": 2.72},
+  "ab_bstats": {"o1_nobstats_s": 7.89, "o1_final_s": 8.66, "shuffle_nobstats_mb": 592.3, "shuffle_final_mb": 6.6},
+  "escala": {
+    "fracoes": [0.1, 0.2, 1.0],
+    "m1": [8.73, 8.18, 16.40],
+    "m2": [1.74, 1.88, 4.31],
+    "m3": [3.40, 3.41, 6.79],
+    "o1": [2.72, 2.77, 8.66],
+    "o2": [7.83, 8.68, 22.25]
+  },
+  "cores": {"o2_4t_s": 32.44, "o2_16t_s": 22.25, "m2_4t_s": 3.89, "m2_16t_s": 2.90},
+  "skew": {"o1_baseline_stage11_max_ms": 19738, "median_ms": 4447, "razao": 4.44},
+  "m1_stats": {"total_records": 41169720, "kept_2024": 35274752,
+               "removed": {"fare_le_0": 748284, "distance_le_0": 776305, "passengers_invalid": 4492870, "dropoff_before_pickup": 13510, "location_invalid": 425660}}
+}

@@ -1,0 +1,105 @@
+{
+  "variant": "final",
+  "sample": 0.1,
+  "master": "local[*]",
+  "flags": {
+    "prune": true,
+    "broadcast": true,
+    "cache": true,
+    "vectorized": true,
+    "bstats": true
+  },
+  "ops": {
+    "o1": {
+      "wall_time_s": 2.72,
+      "num_jobs": 5,
+      "num_stages": 7,
+      "num_tasks": 72,
+      "executor_run_time_ms": 24225,
+      "executor_cpu_time_ms": 12406,
+      "input_bytes": 407860651,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 2150076,
+      "shuffle_write_bytes": 2150076,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "rate_rows": 43
+    },
+    "m1": {
+      "wall_time_s": 8.73,
+      "num_jobs": 8,
+      "num_stages": 11,
+      "num_tasks": 123,
+      "executor_run_time_ms": 85989,
+      "executor_cpu_time_ms": 47593,
+      "input_bytes": 204536856,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 4014,
+      "shuffle_write_bytes": 4014,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "total_records": 4116527,
+      "removed_per_criterion": {
+        "fare_le_0": 74992,
+        "distance_le_0": 77806,
+        "passengers_invalid": 449443,
+        "dropoff_before_pickup": 1366,
+        "location_invalid": 42762
+      },
+      "kept_per_year": {
+        "2023": 3,
+        "2024": 3526447,
+        "2002": 2,
+        "2009": 1
+      }
+    },
+    "m2": {
+      "wall_time_s": 1.74,
+      "num_jobs": 3,
+      "num_stages": 4,
+      "num_tasks": 36,
+      "executor_run_time_ms": 14985,
+      "executor_cpu_time_ms": 7515,
+      "input_bytes": 203936491,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 621555,
+      "shuffle_write_bytes": 621555,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "rows": 772
+    },
+    "m3": {
+      "wall_time_s": 3.4,
+      "num_jobs": 9,
+      "num_stages": 18,
+      "num_tasks": 130,
+      "executor_run_time_ms": 27969,
+      "executor_cpu_time_ms": 14796,
+      "input_bytes": 407872982,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 407649,
+      "shuffle_write_bytes": 407649,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "rows": 2789,
+      "spike_rows": 0
+    },
+    "o2": {
+      "wall_time_s": 7.83,
+      "num_jobs": 25,
+      "num_stages": 68,
+      "num_tasks": 439,
+      "executor_run_time_ms": 67897,
+      "executor_cpu_time_ms": 42156,
+      "input_bytes": 1019645462,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 10629952,
+      "shuffle_write_bytes": 10629952,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "top20_rows_per_borough_month": 1023,
+      "direction_reversals": 454
+    }
+  },
+  "total_wall_s": 19.32
+}

@@ -1,0 +1,75 @@
+{
+  "variant": "novector",
+  "sample": 0.1,
+  "master": "local[*]",
+  "flags": {
+    "prune": true,
+    "broadcast": true,
+    "cache": true,
+    "vectorized": false,
+    "bstats": true
+  },
+  "ops": {
+    "o1": {
+      "wall_time_s": 37.67,
+      "num_jobs": 5,
+      "num_stages": 7,
+      "num_tasks": 72,
+      "executor_run_time_ms": 556947,
+      "executor_cpu_time_ms": 11265,
+      "input_bytes": 407860651,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 2150076,
+      "shuffle_write_bytes": 2150076,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "rate_rows": 43,
+      "task_skew": [
+        {
+          "stage_id": 19,
+          "median_ms": 32.0,
+          "p75_ms": 32.0,
+          "p95_ms": 32.0,
+          "max_ms": 32.0
+        },
+        {
+          "stage_id": 18,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 17,
+          "median_ms": 1430.0,
+          "p75_ms": 16936.0,
+          "p95_ms": 16952.0,
+          "max_ms": 18050.0
+        },
+        {
+          "stage_id": 16,
+          "median_ms": 99.0,
+          "p75_ms": 99.0,
+          "p95_ms": 101.0,
+          "max_ms": 101.0
+        },
+        {
+          "stage_id": 15,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 14,
+          "median_ms": 1660.0,
+          "p75_ms": 17499.0,
+          "p95_ms": 17527.0,
+          "max_ms": 18370.0
+        },
+        {
+          "stage_id": 13,
+          "median_ms": 63.0,
+          "p75_ms": 63.0,
+          "p95_ms": 63.0,
+          "max_ms": 63.0
+        }
+      ]
+    }
+  },
+  "total_wall_s": 50.74
+}

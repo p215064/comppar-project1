@@ -1,0 +1,196 @@
+{
+  "variant": "baseline",
+  "sample": 1.0,
+  "master": "local[*]",
+  "flags": {
+    "prune": false,
+    "broadcast": false,
+    "cache": false,
+    "vectorized": false,
+    "shufflesize": false
+  },
+  "ops": {
+    "m1": {
+      "wall_time_s": 7.04,
+      "num_jobs": 5,
+      "num_stages": 7,
+      "num_tasks": 71,
+      "executor_run_time_ms": 68446,
+      "executor_cpu_time_ms": 33203,
+      "input_bytes": 11942800,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 5838,
+      "shuffle_write_bytes": 5838,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "total_records": 41169720,
+      "removed_per_criterion": {
+        "fare_le_0": 748284,
+        "distance_le_0": 776305,
+        "passengers_invalid": 4492870,
+        "dropoff_before_pickup": 13510,
+        "location_invalid": 425660
+      },
+      "kept_per_year": {
+        "2023": 10,
+        "2024": 35274752,
+        "2002": 10,
+        "2009": 15,
+        "2008": 9,
+        "2026": 1,
+        "2025": 5
+      }
+    },
+    "m2": {
+      "wall_time_s": 9.71,
+      "num_jobs": 4,
+      "num_stages": 9,
+      "num_tasks": 97,
+      "executor_run_time_ms": 112600,
+      "executor_cpu_time_ms": 75562,
+      "input_bytes": 11750899,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 797533504,
+      "shuffle_write_bytes": 797533504,
+      "memory_spilled_bytes": 469761152,
+      "disk_spilled_bytes": 188660440,
+      "rows": 959
+    },
+    "m3": {
+      "wall_time_s": 10.99,
+      "num_jobs": 10,
+      "num_stages": 26,
+      "num_tasks": 154,
+      "executor_run_time_ms": 114057,
+      "executor_cpu_time_ms": 74468,
+      "input_bytes": 23501798,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 495537,
+      "shuffle_write_bytes": 495537,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "rows": 3042,
+      "spike_rows": 0
+    },
+    "o1": {
+      "wall_time_s": 41.69,
+      "num_jobs": 6,
+      "num_stages": 17,
+      "num_tasks": 203,
+      "executor_run_time_ms": 571936,
+      "executor_cpu_time_ms": 36421,
+      "input_bytes": 420795,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 70957834,
+      "shuffle_write_bytes": 70957834,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "rate_rows": 43,
+      "task_skew": [
+        {
+          "stage_id": 25,
+          "median_ms": 22.0,
+          "p75_ms": 22.0,
+          "p95_ms": 22.0,
+          "max_ms": 22.0
+        },
+        {
+          "stage_id": 24,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 23,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 22,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 21,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 20,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 19,
+          "median_ms": 701.0,
+          "p75_ms": 710.0,
+          "p95_ms": 770.0,
+          "max_ms": 942.0
+        },
+        {
+          "stage_id": 18,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 17,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 16,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 15,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 14,
+          "median_ms": 504.0,
+          "p75_ms": 1216.0,
+          "p95_ms": 1270.0,
+          "max_ms": 1328.0
+        },
+        {
+          "stage_id": 13,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 12,
+          "error": "<HTTPError 404: 'Not Found'>"
+        },
+        {
+          "stage_id": 11,
+          "median_ms": 4447.0,
+          "p75_ms": 14891.0,
+          "p95_ms": 14917.0,
+          "max_ms": 19738.0
+        },
+        {
+          "stage_id": 10,
+          "median_ms": 14897.0,
+          "p75_ms": 17576.0,
+          "p95_ms": 17655.0,
+          "max_ms": 32475.0
+        },
+        {
+          "stage_id": 9,
+          "median_ms": 403.0,
+          "p75_ms": 403.0,
+          "p95_ms": 403.0,
+          "max_ms": 403.0
+        }
+      ]
+    },
+    "o2": {
+      "wall_time_s": 21.95,
+      "num_jobs": 18,
+      "num_stages": 75,
+      "num_tasks": 403,
+      "executor_run_time_ms": 207617,
+      "executor_cpu_time_ms": 138671,
+      "input_bytes": 35240366,
+      "output_bytes": 0,
+      "shuffle_read_bytes": 19795009,
+      "shuffle_write_bytes": 18519891,
+      "memory_spilled_bytes": 0,
+      "disk_spilled_bytes": 0,
+      "top20_rows_per_borough_month": 1360,
+      "direction_reversals": 1532
+    }
+  },
+  "total_wall_s": 33.61
+}

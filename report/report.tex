@@ -23,15 +23,14 @@ cerca de 41 milhões de viagens. O pipeline inclui limpeza de dados,
 análise temporal da procura, estatísticas de zona com funções de janela,
 deteção de anomalias no preço por milha (O1) e análise de fluxos
 origem-destino (O2). Seguindo o ciclo de perfilar, hipotetizar, otimizar
-e medir, identificaram-se cinco gargalos e aplicaram-se cinco otimizações
+e medir, aplicaram-se cinco otimizações
 mensuráveis: poda de colunas na leitura, \emph{broadcast} do \emph{zone
 lookup}, \emph{cache} do conjunto limpo, substituição de uma UDF Python
 por aritmética nativa e \emph{broadcast} das estatísticas intermédias do
 O1. Em conjunto, o tempo do pipeline cai de mais de 91 segundos (com o
 O1 a correr apenas numa amostra de 10\%) para cerca de 58 segundos no
 dataset completo. A análise de escala mostra crescimento sub-linear com o
-volume de dados e speedup sub-linear com o número de \emph{threads}, com
-discussão das causas.
+volume de dados e speedup sub-linear com o número de \emph{threads}.
 \end{abstract}
 
 \maketitle
@@ -58,25 +57,21 @@ rota no tráfego de saída da zona, extrai o top-20 por \emph{borough} e
 deteta pares cuja direção dominante inverte entre o primeiro e o terceiro
 trimestres.
 
-A escolha de O1 e O2 foi deliberada do ponto de vista de desempenho. O
-O1 é pesado em dois aspetos distintos: envolve uma UDF Python no caminho
+A escolha de O1 e O2 foi deliberada. O O1 tem uma UDF Python no caminho
 crítico, que bloqueia a geração de código nativa do Spark e força a
-serialização linha a linha para o interpretador Python, e tem agregações
-com assimetria natural, pois as zonas de aeroporto (JFK, Newark)
-concentram volumes muito acima da mediana. O O2 expõe múltiplos joins com
-a tabela de zonas e uma estrutura em que o mesmo DataFrame de fluxos é
-consumido duas vezes, o que convida a recomputação. Em ambos, o shuffle
-e a escolha da estratégia de join são o centro da análise.
+serialização linha a linha para o interpretador Python, e agregações
+com assimetria natural: as zonas de aeroporto (JFK, Newark) concentram
+volumes muito acima da mediana. O O2 expõe múltiplos joins com a tabela
+de zonas e consome o mesmo DataFrame de fluxos duas vezes, o que convida
+a recomputação. Em ambos, o shuffle e a escolha da estratégia de join
+são o centro da análise.
 
 \section{Pipeline}
 
 O pipeline está escrito em PySpark 4.2.0 \cite{zaharia2010spark} usando
-apenas a DataFrame API. Preferi a DataFrame API ao Spark SQL porque o
-Catalyst otimiza ambas da mesma forma \cite{armbrust2015sparksql}, mas a
-API tipada facilita manter o código e reproduzir os planos entre
-corridas. Cada operação é implementada como uma função que
-recebe o DataFrame de viagens limpas, o que permitiu ligar e desligar
-otimizações sem duplicar código.
+apenas a DataFrame API. Cada operação é uma função que recebe o DataFrame
+de viagens limpas, o que permitiu ligar e desligar otimizações sem
+duplicar código.
 
 Em M1, os ficheiros Parquet são lidos, os tipos são impostos com
 \emph{cast} e aplicam-se cinco critérios de rejeição: tarifa não
@@ -91,21 +86,19 @@ mais do que um critério).
 
 M2 junta a tabela de zonas pela zona de recolha, extrai dia da semana e
 hora e agrega por (\emph{borough}, dia, hora) o número de viagens, a
-tarifa média, a duração média em minutos e a distância média, escrevendo
-o resultado em Parquet particionado por \emph{borough}. M3 agrega primeiro
-por zona e mês (média e desvio padrão de tarifa e distância) e só depois
-aplica quatro janelas sobre o resultado agregado, que tem apenas cerca de
-3 mil linhas: ranking de zonas dentro de cada \emph{borough} por mês,
+tarifa média, a duração média em minutos e a distância média. M3 agrega
+primeiro por zona e mês (média e desvio padrão de tarifa e distância) e
+só depois aplica quatro janelas sobre o resultado agregado, que tem cerca
+de 3 mil linhas: ranking de zonas dentro de cada \emph{borough} por mês,
 quota móvel de 3 meses no \emph{borough}, média e desvio móveis de 3
 meses da zona, e um \emph{flag} quando o volume do mês excede a média
-móvel mais $1,5$ desvios. Agregar antes de abrir janelas foi uma decisão
-importante: abrir janelas sobre as viagens em bruto seria 4 ordens de
+móvel mais $1,5$ desvios. Agregar antes de abrir janelas é muito mais
+barato: abrir janelas sobre as viagens em bruto seria 4 ordens de
 grandeza mais caro.
 
-A Figura~\ref{fig:plan} mostra o plano físico simplificado do M2 na
-versão otimizada. O join com a tabela de zonas resolve-se com
-\emph{BroadcastHashJoin}, e o único \emph{Exchange} é o da agregação
-parcial, que transporta cerca de 0,7 MB.
+A Figura~\ref{fig:plan} mostra o plano físico simplificado do M2
+otimizado: o join com as zonas resolve-se com \emph{BroadcastHashJoin} e
+o único \emph{Exchange} é o da agregação parcial, de cerca de 0,7 MB.
 
 \begin{figure}[t]
 \centering
@@ -130,26 +123,21 @@ AdaptiveSparkPlan
 
 \section{Profiling e Baseline}
 
-As experiências correram num portátil com CPU de 8 núcleos físicos (16
-\emph{threads}), 16 GB de RAM e disco NVMe, em modo
-\texttt{local[*]} com 6 GB de memória do \emph{driver}. O cluster do
-gabinete (DI) não estava disponível durante o projeto, pelo que todas
-as medições são locais; a Secção~\ref{sec:analise} usa
-\texttt{local[4]} como substituto do escalonamento por nós. Como
-ferramenta de profiling usei o \emph{SparkProfiler} do Lab 3, que recolhe
-métricas por estágio da API REST da Spark UI (tempo de parede, bytes de
-shuffle, número de \emph{tasks}, tempo de CPU dos executores), adaptado
-para gravar resultados em JSON a cada operação e para medir a assimetria
-das \emph{tasks} por estágio. Todas as corridas foram repetidas em
-processos separados para atribuir corretamente os estágios a cada
-variante.
+As experiências correram num portátil com 8 núcleos físicos (16
+\emph{threads}), 16 GB de RAM e disco NVMe, em modo \texttt{local[*]} com
+6 GB de memória do \emph{driver}. O cluster do gabinete (DI) não estava
+disponível, pelo que todas as medições são locais; a
+Secção~\ref{sec:analise} usa \texttt{local[4]} como substituto do
+escalonamento por nós. Como ferramenta de profiling usei o
+\emph{SparkProfiler} do Lab 3, adaptado para gravar métricas por estágio
+em JSON. Todas as corridas foram repetidas em processos separados para
+atribuir corretamente os estágios a cada variante.
 
 A baseline é a implementação direta: leitura de todas as colunas, joins
-sem \emph{hints}, sem \emph{cache}, UDF no O1 e a auto-broadcast
-desligada (\texttt{autoBroadcastJoinThreshold=-1}), de modo a forçar o
-plano por defeito de um cluster onde a tabela pequena não satisfaz o
-limiar de broadcast. A Tabela~\ref{tab:baseline} resume as medições. Três
-observações estruturaram o resto do trabalho:
+sem \emph{hints}, sem \emph{cache}, UDF no O1 e auto-broadcast desligada
+(\texttt{autoBroadcastJoinThreshold=-1}), de modo a forçar o plano por
+defeito. A Tabela~\ref{tab:baseline} resume as medições. Três observações
+estruturaram o resto do trabalho:
 
 \begin{table}[t]
 \centering
@@ -182,10 +170,9 @@ o que se reflete em 75 estágios.
 
 \section{Estudo de Otimização}
 
-Cada subsecção segue a mesma estrutura: gargalo observado, hipótese,
-alteração e resultado medido. Para isolar cada efeito, cada otimização
-tem uma variante de controlo em que só ela está desligada; as sessões de
-comparação correm sempre o M1 seguido da operação afetada.
+Cada subsecção segue a mesma estrutura: gargalo, hipótese, alteração e
+resultado medido. Para isolar cada efeito, cada otimização tem uma
+variante de controlo em que só ela está desligada.
 
 \subsection{Poda de colunas na leitura}
 
@@ -197,10 +184,8 @@ a leitura. \textbf{Medição.} Numa sondagem com agregação sobre o ano
 completo, a leitura sem poda demora 2.3 s de parede (9.0 s de CPU dos
 executores) contra 0.4 s (3.0 s de CPU) com poda. No M1 completo (que
 inclui a materialização do \emph{cache}), a variante sem poda demora
-22.1 s contra 16.4 s com poda, uma redução de 26\%. Embora o valor
-absoluto pareça pequeno, trata-se de poupança em todas as leituras do
-pipeline, e num cluster multi-máquina traduz-se diretamente em tráfego
-de leitura.
+22.1 s contra 16.4 s com poda ($-$26\%). O ganho repete-se em todas as
+leituras do pipeline.
 
 \subsection{Broadcast do zone lookup}
 
@@ -222,7 +207,7 @@ com dois \emph{Exchanges} passa a \emph{BroadcastHashJoin} com um único
 os Parquet e a reaplicar os filtros de M1. \textbf{Hipótese.} Materializar
 o conjunto limpo uma vez e reutilizá-lo deve compensar a partir da
 segunda operação. \textbf{Alteração.} \texttt{cache()} no DataFrame
-limpo, com \texttt{count()} para o materializar dentro do M1. \textbf{Medição.} O M1 fica mais lento (16.4 s contra 7.0 s na baseline) porque agora inclui a passagem de materialização, mas o M2 em sessão passa de 3.8 s para 2.9 s ($-$24\%), e o efeito acumula nas operações seguintes. Experimentei ainda persistir o DataFrame intermédio de fluxos no O2: piorou de 22 s para 74 s com 5815 \emph{tasks}, por contenção de memória com o \emph{cache} do M1, e reverti a alteração (ver Discussão).
+limpo, com \texttt{count()} para o materializar dentro do M1. \textbf{Medição.} O M1 fica mais lento (16.4 s contra 7.0 s na baseline) porque agora inclui a materialização, mas o M2 em sessão passa de 3.8 s para 2.9 s ($-$24\%), e o efeito acumula nas operações seguintes. Persistir o intermédio de fluxos do O2 piorou (22 s para 74 s, por contenção de memória com o \emph{cache} do M1) e reverti a alteração (ver Discussão).
 
 \subsection{Substituição da UDF do O1}
 
@@ -243,7 +228,7 @@ dos executores \emph{sobe} (11.3 s para 65.0 s): o trabalho migrou dos
 
 \textbf{Gargalo.} Depois de removida a UDF, o O1 otimizado ainda fazia
 um \emph{SortMergeJoin} entre as viagens e as estatísticas por (zona,
-hora), trocando 592 MB de shuffle (variante de controlo). \textbf{Hipótese.} O lado pequeno tem cerca de 6.3 mil linhas (263 zonas $\times$ 24 horas), ideal para broadcast. \textbf{Alteração.} \emph{Hint} \texttt{broadcast()} no DataFrame de estatísticas. \textbf{Medição.} O shuffle lido do O1 cai de 592.3 MB para 6.6 MB (90$\times$ menos). O tempo de parede local praticamente não muda (7.9 s contra 8.7 s), o que é coerente com o shuffle em modo local ser leitura de disco NVMe; o benefício real seria o tráfego de rede evitado num cluster.
+hora), trocando 592 MB de shuffle (variante de controlo). \textbf{Hipótese.} O lado pequeno tem cerca de 6.3 mil linhas (263 zonas $\times$ 24 horas), ideal para broadcast. \textbf{Alteração.} \emph{Hint} \texttt{broadcast()} no DataFrame de estatísticas. \textbf{Medição.} O shuffle lido do O1 cai de 592.3 MB para 6.6 MB (90$\times$ menos). O tempo de parede local quase não muda (7.9 s contra 8.7 s), porque em modo local o shuffle é leitura de disco NVMe; o benefício real seria o tráfego de rede evitado num cluster.
 
 \begin{table}[t]
 \centering
@@ -264,12 +249,11 @@ Broadcast stats (O1) & 592 MB & 6.6 MB & $-$99\% \\
 \end{tabular}
 \end{table}
 
-Em conjunto, o pipeline otimizado demora 58.4 s no ano completo (16.4 + 4.3
-+ 6.8 + 8.7 + 22.3), contra mais de 91 s da baseline com o O1 apenas a
-10\% da amostra; extrapolando a UDF para o ano inteiro, a baseline
-ultrapassaria facilmente os 400 s. O O2 é hoje a operação dominante e o
-seu gargalo já não é o shuffle (22.5 MB) mas o custo de CPU da agregação
-de 35 milhões de linhas.
+Em conjunto, o pipeline otimizado demora 58.4 s no ano completo, contra
+mais de 91 s da baseline com o O1 apenas a 10\%; com a UDF a 100\%, a
+baseline ultrapassaria os 400 s. O O2 é agora a operação dominante e o
+seu gargalo já não é o shuffle (22.5 MB) mas a CPU da agregação de 35
+milhões de linhas.
 
 \section{Análise}
 \label{sec:analise}
@@ -285,30 +269,27 @@ de 35 milhões de linhas.
 \subsection{Escala do dataset}
 
 Corri o pipeline otimizado em amostras de 10\%, 20\% e 100\%. A
-Figura~\ref{fig:scale} mostra que o crescimento é sub-linear: 10 vezes
-mais dados produzem apenas 2.4 vezes mais tempo (24.4 s, 24.9 s e 58.4 s
-de soma das operações). Duas causas se destacam. Em frações pequenas, os
-custos fixos dominam: arranque da JVM, planeamento de consultas e
-agendamento de \emph{tasks} são constantes, pelo que entre 10\% e 20\%
-os tempos quase não se alteram. No M1 a 100\%, a materialização do
-\emph{cache} passa a pressionar a memória (3.5 GB de dados limpos), o que
-explica o salto de 8.2 s para 16.4 s; as restantes operações mantêm
-proporcionalidade aproximada.
+Figura~\ref{fig:scale} mostra crescimento sub-linear: 10 vezes mais
+dados produzem apenas 2.4 vezes mais tempo (24.4 s, 24.9 s e 58.4 s de
+soma das operações). Em frações pequenas, os custos fixos dominam
+(arranque da JVM, planeamento e agendamento de \emph{tasks}), pelo que
+entre 10\% e 20\% os tempos quase não se alteram. No M1 a 100\%, a
+materialização do \emph{cache} passa a pressionar a memória (3.5 GB de
+dados limpos), o que explica o salto de 8.2 s para 16.4 s.
 
 \subsection{Tamanho do cluster}
 
 Sem acesso ao cluster DI, aproximei o escalonamento por nós correndo o
 pipeline com 4 \emph{cores} (\texttt{local[4]}) e com as 16 \emph{threads}
-disponíveis. A Figura~\ref{fig:speedup} reporta o speedup
-$T_4/T_{16}$. No O2, a operação dominante, o speedup é 1.46$\times$ para
-um ideal de 4$\times$ (eficiência de 36\%). Os desvios face ao speedup
-ideal têm causas identificáveis: as 16 \emph{threads} correspondem a 8
-núcleos físicos com \emph{hyperthreading}; a largura de banda de memória
-e de disco é partilhada entre os \emph{cores}, e a agregação do O2 é
+disponíveis. A Figura~\ref{fig:speedup} reporta o speedup $T_4/T_{16}$.
+No O2, a operação dominante, o speedup é 1.46$\times$ para um ideal de
+4$\times$ (eficiência de 36\%). As causas do desvio são conhecidas: as
+16 \emph{threads} são 8 núcleos físicos com \emph{hyperthreading}; a
+largura de banda de memória e disco é partilhada, e a agregação do O2 é
 intensiva em ambas; e o AQE coalesce partições de shuffle, reduzindo o
-paralelismo efetivo. No M2 o speedup é de 1.34$\times$ e quase todo o
-seu tempo é leitura do \emph{cache} em memória e agregação de 0.7 MB de
-shuffle, ou seja, está limitado por I/O e não por computação.
+paralelismo efetivo. No M2 o speedup é de 1.34$\times$; quase todo o seu
+tempo é leitura do \emph{cache} e agregação de 0.7 MB de shuffle, ou
+seja, está limitado por I/O.
 
 \begin{figure}[t]
 \centering
@@ -335,15 +316,12 @@ modo local comporta-se de forma diferente de um cluster.
 Há limitações a registar. A métrica de \emph{input bytes} da Spark UI
 mostrou-se pouco fiável em modo local (por exemplo, \texttt{count()} em
 Parquet usa os metadados do rodapé e lê quase nada), pelo que baseei as
-conclusões em tempos de parede, tempo de CPU e bytes de shuffle, e
-capturei os planos físicos em texto em vez de capturas de ecrã. As
+conclusões em tempos de parede, tempo de CPU e bytes de shuffle. As
 corridas têm ruído de 10 a 20\% entre processos, daí as comparações
 A/B terem sido feitas sempre em processos novos e emparelhados. Com mais
-tempo, correria o estudo completo no cluster Docker do laboratório com
-dois tamanhos de alocação, estenderia o dataset a mais anos (o código já
-aceita vários anos como argumento) e exploraria o O3, cujo auto-join com
-desfasamento temporal é o candidato natural a um sexto estudo de
-otimização.
+tempo, correria o estudo no cluster Docker do laboratório e exploraria o
+O3, cujo auto-join com desfasamento temporal é o candidato natural a um
+sexto estudo de otimização.
 
 \bibliographystyle{acm}
 \bibliography{refs}

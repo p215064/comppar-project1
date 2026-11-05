@@ -1,0 +1,12 @@
+data/
+output/
+submission.zip
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+report/report.aux
+report/report.bbl
+report/report.blg
+report/report.log
+report/report.out
